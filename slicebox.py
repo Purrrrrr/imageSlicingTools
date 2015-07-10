@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from PIL import Image
 from imageslicer import getImageColumns, getImageRows, Continuous, Irregular
 from slices import pickLongestSlide
