@@ -1,6 +1,7 @@
 from PIL import Image
-from lib import getImageColumns, getImageRows, Continuous, Irregular
+from imageslicer import getImageColumns, getImageRows, Continuous, Irregular
 from slices import pickLongestSlide
+from files import writeFile, readFile
 import pystache
 import os, sys, subprocess
 
@@ -96,32 +97,20 @@ elif len(columns) == 1:
     template = "verticalbox"
 
 scriptPath = os.path.dirname(os.path.realpath(sys.argv[0]))
-htmlTestTemplate = scriptPath+"/templates/testbox.html"
-htmlTemplate = scriptPath+"/templates/"+template+".html"
-scssTemplate = scriptPath+"/templates/"+template+".scss"
-
-with open(htmlTestTemplate, "r") as file:
-    htmlTestTemplate = file.read()
-
-with open(htmlTemplate, "r") as file:
-    htmlTemplate = file.read()
-
-with open(scssTemplate, "r") as file:
-    scssTemplate = file.read()
+htmlTestTemplate = readFile(scriptPath+"/templates/testbox.html")
+htmlTemplate = readFile(scriptPath+"/templates/"+template+".html")
+scssTemplate = readFile(scriptPath+"/templates/"+template+".scss")
 
 html = pystache.render(htmlTemplate, values)
 scss = pystache.render(scssTemplate, values)
-htmlTest = pystache.render(htmlTestTemplate, {"name": boxName, "html": html})
+htmlTest = pystache.render(htmlTestTemplate, 
+        {"name": boxName, "html": html})
 
-with open(filename+"-test.html", "w") as file:
-    file.write(htmlTest)
-
-with open(filename+".html", "w") as file:
-    file.write(html)
-
-with open(filename+".scss", "w") as file:
-    file.write(scss)
-
+writeFile(filename+"-test.html", htmlTest)
+writeFile(filename+".html", html)
+writeFile(filename+".scss", scss)
+print "Creating CSS file from SCSS..."
 with open(filename+".css", "w") as file:
     subprocess.call(["sass", filename+".scss"], stdout=file)
 
+print "Done"
