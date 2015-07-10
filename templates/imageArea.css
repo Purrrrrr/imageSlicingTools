@@ -1,0 +1,11 @@
+{{identifier}} {
+  position: absolute;
+  background: url({{filename}}) no-repeat;
+  top: {{top}}px;
+  left: {{left}}px;
+  right: {{right}}px;
+  bottom: {{bottom}}px;
+  width: {{width}}px;
+  height: {{height}}px;
+}
+

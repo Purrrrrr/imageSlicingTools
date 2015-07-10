@@ -75,5 +75,75 @@ def getImageRows(image):
   stop = image.size[1]
   return getImageSlices(image, rowsEqual, stop)
 
+class PixelSet:
+  __counter = 0
 
+  def __init__(self, pixel):
+    self.set = set(pixel)
+    self.bounds = list(pixel) + [pixel[0]+1, pixel[1]+1]
+    self.mergedTo = None
+    self.identity = PixelSet.__counter
+    PixelSet.__counter += 1
 
+  def addPixel(self,pixel):
+    if self.mergedTo:
+      return self.mergedTo.addPixel(pixel)
+    self.set.add(pixel)
+    self.bounds[0] = min(self.bounds[0], pixel[0])
+    self.bounds[1] = min(self.bounds[1], pixel[1])
+    self.bounds[2] = max(self.bounds[2], pixel[0])
+    self.bounds[3] = max(self.bounds[3], pixel[1])
+  
+  def mergeTo(self, other):
+    if self is other:
+      return
+    if other.mergedTo:
+      return self.mergeTo(other.mergedTo)
+    if self.mergedTo:
+      return self.mergedTo.mergeTo(other)
+    
+    other.identity = self.identity
+    other.mergedTo = self
+    self.bounds[0] = min(self.bounds[0], other.bounds[0])
+    self.bounds[1] = min(self.bounds[1], other.bounds[1])
+    self.bounds[2] = max(self.bounds[2], other.bounds[2])
+    self.bounds[3] = max(self.bounds[3], other.bounds[3])
+
+  def size(self):
+    return (self.bounds[2]-self.bounds[0], self.bounds[3]-self.bounds[1])
+
+  def __str__(self):
+    return "PixelSet with bounds "+str(self.bounds)+" and size "+str(self.size())
+
+def getImageAreas(image):
+  width = image.size[0]
+  areas = []
+  lastRowSets = [None for _ in range(width)]
+  
+  if image.mode != "RGBA": 
+    raise Exception('Only the RGBA picture format is supported')
+
+  for y in range(image.size[1]):
+    currentRowSets = [None for _ in range(width)]
+    currentSet = None
+    for x in range(width):
+      pos = (x,y)
+      if image.getpixel(pos)[3] > 0: #The pixel is transparent
+        if currentSet:
+          currentSet.addPixel(pos)
+        else:
+          currentSet = PixelSet(pos)
+          areas.append(currentSet)
+        
+        if lastRowSets[x] is not None and lastRowSets[x].identity != currentSet.identity:
+          currentSet.mergeTo(lastRowSets[x])
+
+      else:
+        currentSet = None
+
+      currentRowSets[x] = currentSet
+
+    lastRowSets = currentRowSets 
+
+  
+  return filter(lambda a: a.mergedTo is None, areas)
