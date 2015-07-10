@@ -5,7 +5,7 @@ def eq(pix1, pix2):
 
 def pixelsNearEnough(pix1, pix2):
   for (val1, val2) in zip(pix1, pix2):
-    if abs(val1-val2) > 5:
+    if abs(val1-val2) > 4:
       return False
   return True
 

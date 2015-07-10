@@ -1,0 +1,18 @@
+${{name}}_left_border: {{left}}px;
+${{name}}_right_border: {{right}}px;
+
+#{{name}} {
+  background: url({{name}}_left{{extension}}) top left no-repeat;
+  padding: 0 0 0 ${{name}}_left_border;
+
+  & > .holder {
+    background: url({{name}}_right{{extension}}) top right no-repeat;
+    padding: 0 ${{name}}_right_border 0 0;
+    & > .content {
+      position: relative;
+      background: url({{name}}{{extension}});
+      width: {{width}}px - ${{name}}_left_border - ${{name}}_right_border;
+      height: {{height}}px;
+    }
+  }
+}

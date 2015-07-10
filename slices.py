@@ -50,3 +50,21 @@ def pruneSlices(slices, treshold = 5):
         newSlices.append(curSlice)
 
     return combineSlicesOfSameType(newSlices)
+
+def pickLongestSlide(slices):
+    slices = pruneSlices(slices)
+    longest = longestContinuousSlice(slices)
+    if longest is None:
+        return slices
+
+    newslices = []
+    if (longest[1] > 0):
+        newslices.append((Irregular,0, longest[1]))
+
+    newslices.append(longest) 
+
+    endPoint = slices[-1][1]+slices[-1][2]
+    if (longest[1]+longest[2] < endPoint):
+        newslices.append((Irregular,longest[1]+longest[2], endPoint-(longest[1]+longest[2])))
+
+    return newslices

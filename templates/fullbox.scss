@@ -1,0 +1,71 @@
+${{name}}_left_border: {{left}}px;
+${{name}}_right_border: {{right}}px;
+${{name}}_top_border: {{top}}px;
+${{name}}_bottom_border: {{bottom}}px;
+
+#{{name}} {
+  position: relative;
+  //padding: ${{name}}_top_border ${{name}}_right_border ${{name}}_bottom_border ${{name}}_left_border;
+  padding: 0 ${{name}}_right_border 0 ${{name}}_left_border;
+
+  & > .left_top {
+    background: url({{name}}_left_top{{extension}}) top left no-repeat;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: ${{name}}_left_border;
+    height: ${{name}}_top_border;
+  }
+  & > .top_border {
+    background: url({{name}}_top{{extension}}) top left repeat-x;
+    width: 100%;
+    height: ${{name}}_top_border;
+  }
+  & > .right_top {
+    background: url({{name}}_right_top{{extension}}) top left no-repeat;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: ${{name}}_right_border;
+    height: ${{name}}_top_border;
+  }
+
+  & > .leftholder {
+    background: url({{name}}_left{{extension}}) top left repeat-y;
+    padding: 0 0 0 ${{name}}_left_border;
+    margin: 0 (-${{name}}_right_border) 0 (-${{name}}_left_border);
+
+    & > .rightholder {
+      background: url({{name}}_right{{extension}}) top right repeat-y;
+      padding: 0 ${{name}}_right_border 0 0;
+      & > .content {
+        position: relative;
+        background: url({{name}}{{extension}});
+        width: {{width}}px - ${{name}}_left_border - ${{name}}_right_border;
+        height: {{height}}px - ${{name}}_top_border - ${{name}}_bottom_border;
+      }
+    }
+  }
+
+  & > .left_bottom {
+    background: url({{name}}_left_bottom{{extension}}) bottom left no-repeat;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: ${{name}}_left_border;
+    height: ${{name}}_bottom_border;
+  }
+  & > .bottom_border {
+    background: url({{name}}_bottom{{extension}}) bottom left repeat-x;
+    width: 100%;
+    height: ${{name}}_bottom_border;
+  }
+  & > .right_bottom {
+    background: url({{name}}_right_bottom{{extension}}) bottom left no-repeat;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: ${{name}}_right_border;
+    height: ${{name}}_bottom_border;
+  }
+}

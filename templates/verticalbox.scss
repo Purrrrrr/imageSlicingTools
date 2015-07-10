@@ -1,0 +1,19 @@
+${{name}}_top_border: {{top}}px;
+${{name}}_bottom_border: {{bottom}}px;
+
+#{{name}} {
+  background: url({{name}}_top{{extension}}) top left no-repeat;
+
+  padding: ${{name}}_top_border 0 0 0;
+
+  & > .holder {
+    background: url({{name}}_bottom{{extension}}) bottom left no-repeat;
+    padding: 0 0 ${{name}}_bottom_border 0;
+    & > .content {
+      position: relative;
+      background: url({{name}}{{extension}});
+      width: {{width}}px;
+      height: {{height}}px - ${{name}}_top_border - ${{name}}_bottom_border;
+    }
+  }
+}
