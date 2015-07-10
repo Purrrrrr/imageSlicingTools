@@ -2,7 +2,7 @@ from PIL import Image
 from lib import getImageColumns, getImageRows, Continuous, Irregular
 from slices import pickLongestSlide
 import pystache
-import os, sys
+import os, sys, subprocess
 
 infile = sys.argv[1]
 image = Image.open(infile)
@@ -121,4 +121,7 @@ with open(filename+".html", "w") as file:
 
 with open(filename+".scss", "w") as file:
     file.write(scss)
+
+with open(filename+".css", "w") as file:
+    subprocess.call(["sass", filename+".scss"], stdout=file)
 
