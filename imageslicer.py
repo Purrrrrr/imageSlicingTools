@@ -111,24 +111,39 @@ class PixelSet:
 
   def size(self):
     return (self.bounds[2]-self.bounds[0], self.bounds[3]-self.bounds[1])
+  def center(self):
+    return (self.bounds[0]+self.bounds[2]/2, self.bounds[1]+self.bounds[3]/2)
+  def width(self):
+    return self.bounds[2]-self.bounds[0]
+  def height(self):
+    return self.bounds[3]-self.bounds[1]
 
   def __str__(self):
     return "PixelSet with bounds "+str(self.bounds)+" and size "+str(self.size())
 
-def getImageAreas(image):
+def isNotTransparent(pixel):
+  return pixel[3] > 0
+
+def getImageAreas(image, backgroundColor = None):
   width = image.size[0]
   areas = []
   lastRowSets = [None for _ in range(width)]
   
-  if image.mode != "RGBA": 
-    raise Exception('Only the RGBA picture format is supported')
+  if backgroundColor:
+    if len(backgroundColor) < 4 and image.mode == "RGBA":
+      backgroundColor = backgroundColor+(255,)
+    isOpaque = lambda x: x != backgroundColor
+  else: 
+    if image.mode != "RGBA": 
+      raise Exception('Only the RGBA picture format is supported')
+    isOpaque = isNotTransparent
 
   for y in range(image.size[1]):
     currentRowSets = [None for _ in range(width)]
     currentSet = None
     for x in range(width):
       pos = (x,y)
-      if image.getpixel(pos)[3] > 0: #The pixel is transparent
+      if isOpaque(image.getpixel(pos)):
         if currentSet:
           currentSet.addPixel(pos)
         else:
@@ -147,3 +162,35 @@ def getImageAreas(image):
 
   
   return filter(lambda a: a.mergedTo is None, areas)
+
+def combineAreas(areas, minSize):
+  (minW, minH) = minSize
+  isLargeEnough = lambda area: area.width() > minW and area.height() > minH
+  largeEnough = filter(isLargeEnough, areas)
+  tooSmall = filter(lambda x: not isLargeEnough(x), areas)
+  print largeEnough
+  print tooSmall
+
+  def isNear(area,other,minSize):
+    (x1,y1)= area.center()
+    (x2,y2) = other.center()
+    (w1,h1)= area.size()
+    (w2,h2) = other.size()
+    
+    if abs(x1-x2)-(w1-w2)/2 > minSize[0]:
+      return False
+    if abs(y1-y2)-(h1-h2)/2 > minSize[1]:
+      return False
+
+    return True
+    
+  for area in tooSmall:
+    for area2 in tooSmall:
+      if area.identity == area2.identity: 
+        continue
+      if isNear(area, area2, minSize):
+        area.mergeTo(area2)
+
+  return largeEnough + filter(lambda a: a.mergedTo is None, tooSmall)
+  
+

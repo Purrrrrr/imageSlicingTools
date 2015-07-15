@@ -1,15 +1,49 @@
 #!/usr/bin/python
 from PIL import Image
 from files import writeFile, readFile
-from imageslicer import getImageAreas
+from imageslicer import getImageAreas, combineAreas
 import pystache
+import argparse
 import os, sys, subprocess
 from tempfile import NamedTemporaryFile
 
-infile = sys.argv[1]
-outfile = sys.argv[2]
+cliParser = argparse.ArgumentParser(
+          description="slicePictures - slice a picture into pieces that stand out from the background")
+cliParser.add_argument("-b", "--background", 
+        help="Give the background color to use either in the css rgb ff00ff syntax or as tuple (1,20,124)",
+        required=False)
+cliParser.add_argument("-s", "--minimumSize", 
+        help="Give the minimum width and height of an image to cut. Smaller images are combined to form larger ones. The size is given in the format 100x100. The default is 16x16",
+        required=False)
+cliParser.add_argument("infile", help="Input file")
+cliParser.add_argument("outfile", help="Output file naming schema. The filename, path and extension will be used in saving the images and accompanying CSS and HTML files")
+
+args = cliParser.parse_args()
+infile = args.infile
+outfile = args.outfile
 targetFilename =  ".".join(outfile.split(".")[:-1])
 extension = "."+outfile.split(".")[-1]
+
+def parseColor(colorStr):
+    print(colorStr)
+    if colorStr[0] == "#":
+        colorStr = colorStr[1:]
+        l = 2 if len(colorStr) == 6 else 1
+        colors = [colorStr[x:x+l] for x in range(0,len(colorStr)/l+l,l)]
+        colors = map(lambda x: int(x,16), colors)
+        return tuple(colors)
+    else:
+        colors = colorStr.split(",")
+        colors = map(int, colors)
+        return tuple(colors)
+    return None
+
+def parseSize(sizeStr):
+    size = sizeStr.split("x")
+    return tuple(map(int, size))
+
+backgroundColor = parseColor(args.background) if args.background else None
+minimumSize = parseSize(args.minimumSize) if args.minimumSize else (16,16)
 
 image = Image.open(infile)
 (imageWidth, imageHeight) = image.size
@@ -18,7 +52,7 @@ print "Size of image ",image.size
 displayer = "display"
 namedFiles = []
 
-for area in  getImageAreas(image):
+for area in combineAreas(getImageAreas(image, backgroundColor), minimumSize):
     size = area.size()
 
     print "Displaying", area
@@ -32,8 +66,8 @@ for area in  getImageAreas(image):
     try:
         identifier = raw_input("What is the #id or .class of the image shown just now? Just press enter to skip saving it\n");
         if identifier[0] not in ("#", "."):
-            identifier = "#"+identifier
             name = identifier
+            identifier = "#"+identifier
         else:
             name = identifier[1:]
 
