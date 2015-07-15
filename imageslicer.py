@@ -168,8 +168,6 @@ def combineAreas(areas, minSize):
   isLargeEnough = lambda area: area.width() > minW and area.height() > minH
   largeEnough = filter(isLargeEnough, areas)
   tooSmall = filter(lambda x: not isLargeEnough(x), areas)
-  print largeEnough
-  print tooSmall
 
   def isNear(area,other,minSize):
     (x1,y1)= area.center()

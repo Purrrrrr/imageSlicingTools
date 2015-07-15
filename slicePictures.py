@@ -29,7 +29,9 @@ def parseColor(colorStr):
     if colorStr[0] == "#":
         colorStr = colorStr[1:]
         l = 2 if len(colorStr) == 6 else 1
-        colors = [colorStr[x:x+l] for x in range(0,len(colorStr)/l+l,l)]
+        colors = [colorStr[x:x+l] for x in range(0,len(colorStr),l)]
+        if l == 1:
+            colors = map(lambda c: c+c, colors)
         colors = map(lambda x: int(x,16), colors)
         return tuple(colors)
     else:
