@@ -3,9 +3,9 @@ from PIL import Image
 def eq(pix1, pix2):
   return pix1 == pix2
 
-def pixelsNearEnough(pix1, pix2):
+def pixelsNearEnough(pix1, pix2, treshold=4):
   for (val1, val2) in zip(pix1, pix2):
-    if abs(val1-val2) > 4:
+    if abs(val1-val2) > treshold:
       return False
   return True
 
@@ -121,10 +121,10 @@ class PixelSet:
   def __str__(self):
     return "PixelSet with bounds "+str(self.bounds)+" and size "+str(self.size())
 
-def isNotTransparent(pixel):
-  return pixel[3] > 0
+def isNotTransparent(pixel, treshold):
+  return pixel[3] > treshold
 
-def getImageAreas(image, backgroundColor = None):
+def getImageAreas(image, backgroundColor = None, treshold = 0):
   width = image.size[0]
   areas = []
   lastRowSets = [None for _ in range(width)]
@@ -133,10 +133,14 @@ def getImageAreas(image, backgroundColor = None):
     if len(backgroundColor) < 4 and image.mode == "RGBA":
       backgroundColor = backgroundColor+(255,)
     isOpaque = lambda x: x != backgroundColor
+
+    if treshold > 0:
+        isOpaque = lambda x: not pixelsNearEnough(x, backgroundColor, treshold)
+
   else: 
     if image.mode != "RGBA": 
       raise Exception('Only the RGBA picture format is supported')
-    isOpaque = isNotTransparent
+      isOpaque = lambda x: isNotTransparent(x, treshold)
 
   for y in range(image.size[1]):
     currentRowSets = [None for _ in range(width)]

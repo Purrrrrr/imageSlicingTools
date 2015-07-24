@@ -9,6 +9,10 @@ from tempfile import NamedTemporaryFile
 
 cliParser = argparse.ArgumentParser(
           description="slicePictures - slice a picture into pieces that stand out from the background")
+cliParser.add_argument("-t", "--treshold", 
+        default=0,
+        help="How far away a color can be from the background color to be consider a part of the background",
+        required=False)
 cliParser.add_argument("-b", "--background", 
         help="Give the background color to use either in the css rgb ff00ff syntax or as tuple (1,20,124)",
         required=False)
@@ -28,7 +32,7 @@ def parseColor(colorStr):
     print(colorStr)
     if colorStr[0] == "#":
         colorStr = colorStr[1:]
-        l = 2 if len(colorStr) == 6 else 1
+        l = 2 if len(colorStr) in (6,8) else 1
         colors = [colorStr[x:x+l] for x in range(0,len(colorStr),l)]
         if l == 1:
             colors = map(lambda c: c+c, colors)
@@ -46,15 +50,16 @@ def parseSize(sizeStr):
 
 backgroundColor = parseColor(args.background) if args.background else None
 minimumSize = parseSize(args.minimumSize) if args.minimumSize else (16,16)
+treshold = int(args.treshold) if args.treshold else 0
 
 image = Image.open(infile)
 (imageWidth, imageHeight) = image.size
-print "Size of image ",image.size
+print "Size of image ",image.size, "mode is ",image.mode
 
 displayer = "display"
 namedFiles = []
 
-for area in combineAreas(getImageAreas(image, backgroundColor), minimumSize):
+for area in combineAreas(getImageAreas(image, backgroundColor, treshold), minimumSize):
     size = area.size()
 
     print "Displaying", area
