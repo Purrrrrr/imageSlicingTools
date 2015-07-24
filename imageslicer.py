@@ -91,8 +91,8 @@ class PixelSet:
     self.set.add(pixel)
     self.bounds[0] = min(self.bounds[0], pixel[0])
     self.bounds[1] = min(self.bounds[1], pixel[1])
-    self.bounds[2] = max(self.bounds[2], pixel[0])
-    self.bounds[3] = max(self.bounds[3], pixel[1])
+    self.bounds[2] = max(self.bounds[2], pixel[0]+1)
+    self.bounds[3] = max(self.bounds[3], pixel[1]+1)
   
   def mergeTo(self, other):
     if self is other:
