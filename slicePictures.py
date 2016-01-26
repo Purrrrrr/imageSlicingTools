@@ -14,7 +14,7 @@ cliParser.add_argument("-t", "--treshold",
         help="How far away a color can be from the background color to be consider a part of the background",
         required=False)
 cliParser.add_argument("-b", "--background", 
-        help="Give the background color to use either in the css rgb ff00ff syntax or as tuple (1,20,124)",
+        help="Give the background color to use either in the css rgb #ff00ff syntax or as tuple (1,20,124)",
         required=False)
 cliParser.add_argument("-s", "--minimumSize", 
         help="Give the minimum width and height of an image to cut. Smaller images are combined to form larger ones. The size is given in the format 100x100. The default is 16x16",
