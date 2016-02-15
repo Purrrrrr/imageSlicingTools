@@ -7,7 +7,8 @@ ${{name}}_bottom_border: {{bottom}}px;
   position: relative;
   //padding: ${{name}}_top_border ${{name}}_right_border ${{name}}_bottom_border ${{name}}_left_border;
   padding: 0 ${{name}}_right_border 0 ${{name}}_left_border;
-
+  
+  {{#top}}
   & > .left_top {
     background: url({{name}}_left_top{{extension}}) top left no-repeat;
     position: absolute;
@@ -29,6 +30,7 @@ ${{name}}_bottom_border: {{bottom}}px;
     width: ${{name}}_right_border;
     height: ${{name}}_top_border;
   }
+  {{/top}}
 
   & > .leftholder {
     background: url({{name}}_left{{extension}}) top left repeat-y;
@@ -47,25 +49,31 @@ ${{name}}_bottom_border: {{bottom}}px;
     }
   }
 
-  & > .left_bottom {
-    background: url({{name}}_left_bottom{{extension}}) bottom left no-repeat;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: ${{name}}_left_border;
-    height: ${{name}}_bottom_border;
-  }
+  {{#bottom}}
   & > .bottom_border {
     background: url({{name}}_bottom{{extension}}) bottom left repeat-x;
     width: 100%;
     height: ${{name}}_bottom_border;
+    &:before {
+      content: '';
+      display: block;
+      background: url({{name}}_left_bottom{{extension}}) bottom left no-repeat;
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: ${{name}}_left_border;
+      height: ${{name}}_bottom_border;
+    }
+    &:after {
+      content: '';
+      display: block;
+      background: url({{name}}_right_bottom{{extension}}) bottom left no-repeat;
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: ${{name}}_right_border;
+      height: ${{name}}_bottom_border;
+    }
   }
-  & > .right_bottom {
-    background: url({{name}}_right_bottom{{extension}}) bottom left no-repeat;
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: ${{name}}_right_border;
-    height: ${{name}}_bottom_border;
-  }
+  {{/bottom}}
 }

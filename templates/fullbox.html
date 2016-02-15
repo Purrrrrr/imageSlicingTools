@@ -1,15 +1,23 @@
 <div id="{{name}}">
-  <div class="left_top"></div>
+  {{#top}}
   <div class="top_border"></div>
-  <div class="right_top"></div>
+  {{/top}}
+  {{#left}}
   <div class="leftholder">
+  {{/left}}
+    {{#right}}
     <div class="rightholder">
+    {{/right}}
       <div class="content">
 
       </div>
+    {{#right}}
     </div>
+    {{/right}}
+  {{#left}}
   </div>
-  <div class="right_bottom"></div>
+  {{/left}}
+  {{#bottom}}
   <div class="bottom_border"></div>
-  <div class="left_bottom"></div>
+  {{/bottom}}
 </div>
