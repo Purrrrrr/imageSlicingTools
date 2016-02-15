@@ -135,12 +135,12 @@ def getImageAreas(image, backgroundColor = None, treshold = 0):
     isOpaque = lambda x: x != backgroundColor
 
     if treshold > 0:
-        isOpaque = lambda x: not pixelsNearEnough(x, backgroundColor, treshold)
+      isOpaque = lambda x: not pixelsNearEnough(x, backgroundColor, treshold)
 
   else: 
     if image.mode != "RGBA": 
       raise Exception('Only the RGBA picture format is supported')
-      isOpaque = lambda x: isNotTransparent(x, treshold)
+    isOpaque = lambda x: isNotTransparent(x, treshold)
 
   for y in range(image.size[1]):
     currentRowSets = [None for _ in range(width)]
