@@ -1,10 +1,14 @@
 #!/usr/bin/python
 from PIL import Image
 from imageslicer import getImageColumns, getImageRows, Continuous, Irregular
-from slices import pickLongestSlide
+from slices import pickBoxSlices
 from files import writeFile, readFile
 import pystache
 import os, sys, subprocess
+
+if len(sys.argv) < 3:
+    print "Usage: slicebox.py infile.png outfile.png"
+    exit()
 
 infile = sys.argv[1]
 image = Image.open(infile)
@@ -16,50 +20,33 @@ rows = getImageRows(image);
 print "Rows: ",rows
 print "Columns: ",columns
 
-rows = pickLongestSlide(rows)
-columns = pickLongestSlide(columns)
+rowSlices = pickBoxSlices(rows, "_top", "_bottom")
+columnSlices = pickBoxSlices(columns, "_left", "_right")
 
-print "Picked rows: ",   rows
-print "Picked columns: ",columns
+print "Picked rows: ",   rowSlices
+print "Picked columns: ",columnSlices
 
 if len(rows) == 1 and len(columns) == 1:
     print "Nothing to slice!"
     exit()
 
-def addPrefixesToBorders(slices, prefixList):
-    if len(slices) == 1:
-        return [("", slices[0])]
-    def getPrefix(prefixList, slice):
-        if slice[0] is Irregular:
-            return prefixList.pop(0)
-        return ""
-      
-    return [(getPrefix(prefixList, slice), slice) for slice in slices]
-
-rowSlices = addPrefixesToBorders(rows, ["_top", "_bottom"])
-columnSlices = addPrefixesToBorders(columns, ["_left", "_right"])
-
-print rowSlices
-print columnSlices
 
 outfile = sys.argv[2]
 filename =  ".".join(outfile.split(".")[:-1])
 extension = "."+outfile.split(".")[-1]
 
 #Image generation
-for (rowprefix, row) in rowSlices:
-    for (columnprefix, column) in columnSlices:
+for row in rowSlices:
+    for column in columnSlices:
         #(left, upper, right, lower)
-        top = row[1]
-        left = column[1]
-        width = column[2]
-        height = row[2]
+        (rowprefix, _, top, height) = row
+        (columnprefix, _, left, width) = column
 
-        if (column[0] is Continuous):
+        if (column[1] is Continuous):
             left += width//2
             width = 1
 
-        if (row[0] is Continuous):
+        if (row[1] is Continuous):
             top += height//2
             height = 1
         
@@ -93,7 +80,7 @@ if columnSlices[-1][0] != "":
 
 template = "fullbox"
 if len(rows) == 1:
-    template = "horizonalbox"
+    template = "horizontalbox"
 elif len(columns) == 1:
     template = "verticalbox"
 
