@@ -25,8 +25,15 @@ cliParser.add_argument("outfile", help="Output file naming schema. The filename,
 args = cliParser.parse_args()
 infile = args.infile
 outfile = args.outfile
-targetFilename =  ".".join(outfile.split(".")[:-1])
-extension = "."+outfile.split(".")[-1]
+
+#Check extension if there is one
+if "." in outfile:
+    targetFilename =  ".".join(outfile.split(".")[:-1])
+    extension = "."+outfile.split(".")[-1]
+else:
+    targetFilename =  outfile
+    extension = ".png"
+
 
 def parseColor(colorStr):
     print(colorStr)
